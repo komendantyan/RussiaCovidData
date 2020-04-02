@@ -102,6 +102,7 @@ def get_matplotlib_figure(all_series):
     ax.legend(prop={'size': 16})
     ax.set_title(TITLE, size=32)
     ax.set_ylabel(YLABEL, size=16)
+    ax.set_xlabel('')
 
     return fig
 
