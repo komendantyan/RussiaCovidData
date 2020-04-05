@@ -84,7 +84,7 @@ def get_plotly_figure(all_series):
 
 
 def get_matplotlib_figure(all_series):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(20, 15))
 
     for name, series in all_series.items():
         series.plot(ax=ax, label=name)
