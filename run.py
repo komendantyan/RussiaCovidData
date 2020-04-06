@@ -7,7 +7,7 @@ from plotly import graph_objs as go
 
 import matplotlib
 from matplotlib import pyplot as plt
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 TITLE = 'Регионы с наибольшим числом заболевших'
@@ -59,6 +59,10 @@ def get_series_to_plot(dataset):
         all_series['Санкт-Петербург и ЛО']
     )
 
+    all_series['total_healthy'] = {'data': dataset.total_healthy,
+                                   'matplotlib': {'linestyle': '--', 'color': 'red'},
+                                   'plotly': {'line': dict(color='red', dash='dash')}}
+
     return all_series
 
 
@@ -73,11 +77,18 @@ def get_plotly_figure(all_series):
     )
 
     for name, series in all_series.items():
+        if isinstance(series, dict):
+            params = series.get('plotly', {})
+            series = series['data']
+        else:
+            params = {}
+
         fig.add_trace(go.Scatter(
             x=all_series['total'].index,
             y=series,
             mode='lines+markers',
-            name=name)
+            name=name,
+            **params)
         )
 
     return fig
@@ -87,7 +98,13 @@ def get_matplotlib_figure(all_series):
     fig, ax = plt.subplots(figsize=(20, 15))
 
     for name, series in all_series.items():
-        series.plot(ax=ax, label=name)
+        if isinstance(series, dict):
+            params = series.get('matplotlib', {})
+            series = series['data']
+        else:
+            params = {}
+
+        series.plot(ax=ax, label=name, **params)
         ax.annotate(f'{series[0]} - {name}', (series.index[0], series[0]))
 
     ax.set_yscale('log', basey=2)
