@@ -3,7 +3,6 @@
 
 import pandas
 import numpy
-from plotly import graph_objs as go
 
 import matplotlib
 from matplotlib import pyplot as plt
@@ -37,6 +36,18 @@ def top_regions(dataset, count=10):
                 .index)
 
 
+def regression(series, slice_fit, slice_predict):
+    from sklearn.linear_model import LinearRegression
+    x = series.index.to_numpy().reshape(-1, 1).astype(int)
+    y = numpy.log2(series.fillna(method='ffill').to_numpy())
+    reg = LinearRegression()
+    reg.fit(x[slice_fit], y[slice_fit])
+    y_pred = 2**reg.predict(x[slice_predict])
+    return pandas.Series(data=y_pred,
+                         index=series.index[slice_predict],
+                         name=(series.name or '??') + ' linear')
+
+
 def get_series_to_plot(dataset):
     def cumsum(*columns):
         return sum(dataset[c].fillna(0.0) for c in columns)[::-1].cumsum()[::-1]
@@ -45,53 +56,37 @@ def get_series_to_plot(dataset):
                for reg in top_regions(dataset)
                if reg not in {'Москва', 'Московская область', 'Санкт-Петербург', 'Ленинградская область'}]
 
-    all_series = {
-        'total': dataset.total,
-        'Москва и МО': cumsum('Москва', 'Московская область'),
-        'Санкт-Петербург и ЛО': cumsum('Санкт-Петербург', 'Ленинградская область'),
+    all_series = {}
 
-        **{reg: cumsum(reg) for reg in regions}
+    all_series['total'] = {'data': dataset.total,
+                           'matplotlib': {'color': 'blue'}}
+
+    all_series['Москва и МО'] = {'data': cumsum('Москва', 'Московская область'),
+                                 'matplotlib': {'color': 'orange'}}
+
+    all_series['Санкт-Петербург и ЛО'] = {'data': cumsum('Санкт-Петербург', 'Ленинградская область'),
+                                                           'matplotlib': {'color': 'green'}}
+
+    all_series.update(**{reg: cumsum(reg) for reg in regions})
+
+    all_series['Россия без МО и ЛО'] = {
+        'data': (
+            all_series['total']['data'] -
+            all_series['Москва и МО']['data'] -
+            all_series['Санкт-Петербург и ЛО']['data']
+        ),
+        'matplotlib': {'color': 'magenta'}
     }
 
-    all_series['Россия без МО и ЛО'] = (
-        all_series['total'] -
-        all_series['Москва и МО'] -
-        all_series['Санкт-Петербург и ЛО']
-    )
-
     all_series['total_healthy'] = {'data': dataset.total_healthy,
-                                   'matplotlib': {'linestyle': '--', 'color': 'red'},
-                                   'plotly': {'line': dict(color='red', dash='dash')}}
+                                   'matplotlib': {'linestyle': '--', 'color': 'red'}}
+
+    for name in ['total', 'Москва и МО', 'Санкт-Петербург и ЛО', 'Россия без МО и ЛО']:
+        all_series[name + ' linear'] = {'data': regression(all_series[name]['data'], slice(4, 11), slice(0, 11)),
+                                        'matplotlib': {'linestyle': '--', 'color': all_series[name]['matplotlib']['color']},
+                                        'annotate': False}
 
     return all_series
-
-
-def get_plotly_figure(all_series):
-    fig = go.Figure(
-        layout=go.Layout(
-            yaxis=go.layout.YAxis(type='log', dtick=numpy.log10(2)),
-            xaxis=go.layout.XAxis(dtick=24*3600*1000),
-            title=TITLE,
-            yaxis_title=YLABEL,
-        )
-    )
-
-    for name, series in all_series.items():
-        if isinstance(series, dict):
-            params = series.get('plotly', {})
-            series = series['data']
-        else:
-            params = {}
-
-        fig.add_trace(go.Scatter(
-            x=all_series['total'].index,
-            y=series,
-            mode='lines+markers',
-            name=name,
-            **params)
-        )
-
-    return fig
 
 
 def get_matplotlib_figure(all_series):
@@ -99,21 +94,24 @@ def get_matplotlib_figure(all_series):
 
     for name, series in all_series.items():
         if isinstance(series, dict):
-            params = series.get('matplotlib', {})
+            plot_params = series.get('matplotlib', {})
+            params = series
             series = series['data']
         else:
+            plot_params = {}
             params = {}
 
-        series.plot(ax=ax, label=name, **params)
-        ax.annotate(f'{series[0]} - {name}', (series.index[0], series[0]))
+        series.plot(ax=ax, label=(name if params.get('annotate', True) else None), **plot_params)
+        if params.get('annotate', True):
+            ax.annotate(f'{series[0]} - {name}', (series.index[0], series[0]))
 
     ax.set_yscale('log', basey=2)
     ax.set_xticks(matplotlib.dates.drange(
-        all_series['total'].index.min(),
-        all_series['total'].index.max() + timedelta(2),
+        all_series['total']['data'].index.min(),
+        all_series['total']['data'].index.max() + timedelta(2),
         timedelta(1)
     ))
-    ax.set_yticks(2**numpy.arange((numpy.log2(all_series['total'].max()))))
+    ax.set_yticks(2**numpy.arange(numpy.ceil((numpy.log2(all_series['total']['data'].max()))) + 1))
 
     ax.grid(which='both')
     ax.legend(prop={'size': 16})
@@ -129,8 +127,6 @@ def main():
     export_to_tables(dataset)
 
     series = get_series_to_plot(dataset)
-    fig = get_plotly_figure(series)
-    fig.write_html('./plot.html')
 
     fig = get_matplotlib_figure(series)
     fig.savefig('./plot.png')
