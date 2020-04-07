@@ -101,7 +101,7 @@ def get_matplotlib_figure(all_series):
             plot_params = {}
             params = {}
 
-        series.plot(ax=ax, **plot_params)
+        series.plot(ax=ax, label=series.name or name, **plot_params)
         if params.get('annotate', True):
             ax.annotate(f'{series[0]} - {name}', (series.index[0], series[0]))
 
