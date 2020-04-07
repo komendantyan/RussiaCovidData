@@ -36,7 +36,7 @@ def top_regions(dataset, count=10):
                 .index)
 
 
-def regression(series, slice_fit, slice_predict):
+def regression(series, slice_fit, slice_predict, name=None):
     from sklearn.linear_model import LinearRegression
     x = series.index.to_numpy().reshape(-1, 1).astype(int)
     y = numpy.log2(series.fillna(method='ffill').to_numpy())
@@ -45,7 +45,7 @@ def regression(series, slice_fit, slice_predict):
     y_pred = 2**reg.predict(x[slice_predict])
     return pandas.Series(data=y_pred,
                          index=series.index[slice_predict],
-                         name=(series.name or '??') + ' linear')
+                         name=(name or '??') + ' (тренд 4 дня назад)')
 
 
 def get_series_to_plot(dataset):
@@ -82,7 +82,7 @@ def get_series_to_plot(dataset):
                                    'matplotlib': {'linestyle': '--', 'color': 'red'}}
 
     for name in ['total', 'Москва и МО', 'Санкт-Петербург и ЛО', 'Россия без МО и ЛО']:
-        all_series[name + ' linear'] = {'data': regression(all_series[name]['data'], slice(4, 11), slice(0, 11)),
+        all_series[name + ' linear'] = {'data': regression(all_series[name]['data'], slice(4, 11), slice(0, 11), name=name),
                                         'matplotlib': {'linestyle': '--', 'color': all_series[name]['matplotlib']['color']},
                                         'annotate': False}
 
@@ -101,7 +101,7 @@ def get_matplotlib_figure(all_series):
             plot_params = {}
             params = {}
 
-        series.plot(ax=ax, label=(name if params.get('annotate', True) else None), **plot_params)
+        series.plot(ax=ax, **plot_params)
         if params.get('annotate', True):
             ax.annotate(f'{series[0]} - {name}', (series.index[0], series[0]))
 
