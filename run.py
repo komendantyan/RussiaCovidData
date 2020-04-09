@@ -79,7 +79,7 @@ def get_series_to_plot(dataset):
     }
 
     all_series['total_healthy'] = {'data': dataset.total_healthy,
-                                   'matplotlib': {'linestyle': '--', 'color': 'red'}}
+                                   'matplotlib': {'linestyle': '', 'marker': '+', 'color': 'red'}}
 
     for name in ['total', 'Москва и МО', 'Санкт-Петербург и ЛО', 'Россия без МО и ЛО']:
         all_series[name + ' linear'] = {'data': regression(all_series[name]['data'], slice(4, 11), slice(0, 11), name=name),
