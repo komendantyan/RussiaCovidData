@@ -1,5 +1,17 @@
 [
   {
+    "date": "2020-05-06",
+    "link": "https://rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14386",
+    "text_date": "2020-05-05",
+    "tests": 4633731
+  },
+  {
+    "date": "2020-05-05",
+    "link": "https://rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14381",
+    "text_date": "2020-05-04",
+    "tests": 4460357
+  },
+  {
     "date": "2020-05-04",
     "link": "https://rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14379",
     "text_date": "2020-05-03",
