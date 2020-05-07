@@ -111,6 +111,7 @@ def get_matplotlib_figure(all_series):
         all_series['total']['data'].index.max() + timedelta(2),
         timedelta(1)
     ))
+    ax.xaxis.set_tick_params(rotation=70)
     ax.set_yticks(2**numpy.arange(numpy.ceil((numpy.log2(all_series['total']['data'].max()))) + 1))
 
     ax.grid(which='both')
