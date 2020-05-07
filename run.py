@@ -90,7 +90,7 @@ def get_series_to_plot(dataset):
 
 
 def get_matplotlib_figure(all_series):
-    fig, ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(figsize=(20, 15), dpi=320)
 
     for name, series in all_series.items():
         if isinstance(series, dict):
