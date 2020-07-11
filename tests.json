@@ -1,5 +1,41 @@
 [
   {
+    "date": "2020-07-11",
+    "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14887",
+    "text_date": "2020-07-10",
+    "tests": 22388195
+  },
+  {
+    "date": "2020-07-10",
+    "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14876",
+    "text_date": "2020-07-09",
+    "tests": 22079294
+  },
+  {
+    "date": "2020-07-09",
+    "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14866",
+    "text_date": "2020-07-08",
+    "tests": 21790705
+  },
+  {
+    "date": "2020-07-08",
+    "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14858",
+    "text_date": "2020-07-07",
+    "tests": 21537771
+  },
+  {
+    "date": "2020-07-07",
+    "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14853",
+    "text_date": "2020-07-06",
+    "tests": 21335394
+  },
+  {
+    "date": "2020-07-06",
+    "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14841",
+    "text_date": "2020-07-05",
+    "tests": 21069457
+  },
+  {
     "date": "2020-07-05",
     "link": "https://www.rospotrebnadzor.ru/about/info/news/news_details.php?ELEMENT_ID=14839",
     "text_date": "2020-07-04",
