@@ -109,7 +109,7 @@ def get_matplotlib_figure(all_series):
     ax.set_xticks(matplotlib.dates.drange(
         all_series['total']['data'].index.min(),
         all_series['total']['data'].index.max() + timedelta(2),
-        timedelta(1)
+        timedelta(2)
     ))
     ax.xaxis.set_tick_params(rotation=80)
     ax.set_yticks(2**numpy.arange(numpy.ceil((numpy.log2(all_series['total']['data'].max()))) + 1))
